@@ -1,7 +1,3 @@
-/*
-Основной исполняемый файл сервера.
-Обрабатывает команды start/stop и управляет жизненным циклом сервера.
-*/
 package main
 
 import (
@@ -15,14 +11,11 @@ import (
 )
 
 const (
-
-	//pidFile = "/var/run/kuzjma-server.pid" // Стандартное расположение PID файла для демонов
-	//pidFile = "/var/run/kuzjma-server/kuzjma-server.pid" // Новый путь
-	pidFile = "/run/kuzjma-server/kuzjma-server.pid" // Актуальный путь для Ubuntu
+	pidFile   = "/var/run/kuzjma-server/kuzjma-server.pid"
+	staticDir = "/var/www/kuzjma.ru" // Директория со статическими файлами
 )
 
 func main() {
-	// Проверяем аргументы командной строки
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "start":
@@ -37,29 +30,25 @@ func main() {
 		return
 	}
 
-	// Если аргументов нет - запускаем сервер
 	startServer()
 }
 
-// startServer запускает HTTPS сервер
 func startServer() {
-	// Проверяем, не запущен ли уже сервер
 	if pidfile.IsServerRunning(pidFile) {
 		fmt.Println("Сервер уже запущен")
 		os.Exit(1)
 	}
 
-	// Сохраняем PID текущего процесса
 	if err := pidfile.SavePID(pidFile, os.Getpid()); err != nil {
 		log.Fatalf("Ошибка сохранения PID: %v\n", err)
 	}
 
-	// Создаем экземпляр сервера для домена kuzjma.ru
-	srv := server.New("kuzjma.ru")
+	// Создаем экземпляр сервера с указанием домена и директории статики
+	srv := server.New("kuzjma.ru", staticDir)
 
-	// Регистрируем обработчики маршрутов
-	srv.HandleFunc("/", rootHandler)
-	srv.HandleFunc("/health", healthHandler)
+	// Регистрируем API-маршруты
+	srv.HandleFunc("/api/status", apiStatusHandler)
+	srv.HandleFunc("/api/data", apiDataHandler)
 
 	log.Println("Запуск сервера для kuzjma.ru...")
 	if err := srv.Start(); err != nil {
@@ -67,16 +56,14 @@ func startServer() {
 	}
 }
 
-// stopServer останавливает работающий сервер
 func stopServer() {
 	if err := pidfile.StopProcess(pidFile); err != nil {
-		fmt.Printf("Ошибка остановки: %v\n", err)
+		fmt.Println("Ошибка:", err)
 		os.Exit(1)
 	}
 	fmt.Println("Сервер успешно остановлен")
 }
 
-// checkStatus проверяет статус сервера
 func checkStatus() {
 	if pidfile.IsServerRunning(pidFile) {
 		fmt.Println("Сервер работает")
@@ -85,7 +72,6 @@ func checkStatus() {
 	}
 }
 
-// printUsage выводит справку по использованию
 func printUsage() {
 	fmt.Println("Использование:")
 	fmt.Println("  server start    - запустить сервер")
@@ -94,15 +80,14 @@ func printUsage() {
 	fmt.Println("  server          - запустить сервер (без демонизации)")
 }
 
-// rootHandler обрабатывает запросы к корневому пути
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "<h1>Добро пожаловать на kuzjma.ru</h1>")
-	fmt.Fprintf(w, "<p>Безопасный HTTPS сервер</p>")
-	fmt.Fprintf(w, "<p>:)</p>")
+// Пример обработчика API
+func apiStatusHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, `{"status": "ok", "service": "kuzjma.ru"}`)
 }
 
-// healthHandler для проверки здоровья сервера
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "OK")
+func apiDataHandler(w http.ResponseWriter, r *http.Request) {
+	// Ваша логика обработки API
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, `{"data": [1, 2, 3]}`)
 }
