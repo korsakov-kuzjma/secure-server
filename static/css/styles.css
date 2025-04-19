@@ -1,0 +1,164 @@
+/* Базовые стили */
+:root {
+    --primary-color: #6e48aa;
+    --secondary-color: #9d50bb;
+    --text-color: #333;
+    --bg-color: #f5f5f5;
+    --header-gradient: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Шапка */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--header-gradient);
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header-brand {
+    display: flex;
+    align-items: baseline;
+}
+
+.site-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+    transition: opacity 0.2s ease;
+}
+
+.site-title:hover {
+    opacity: 0.9;
+}
+
+.slogan {
+    font-size: 1rem;
+    font-weight: 400;
+    opacity: 0.9;
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 1px solid rgba(255,255,255,0.3);
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+}
+
+.menu-placeholder {
+    width: 100px;
+    height: 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+}
+
+/* Основное содержимое */
+.main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+}
+
+.hero-text {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: bold;
+    background: var(--header-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    line-height: 1.2;
+}
+
+/* Подвал */
+.footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.author-link {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
+
+.author-link:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+    }
+
+    .header-brand {
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .site-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .slogan {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    .header-nav {
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+
+    .main-content {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-text {
+        font-size: 2rem;
+    }
+
+    .footer {
+        padding: 1rem;
+    }
+}
